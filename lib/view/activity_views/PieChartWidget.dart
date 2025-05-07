@@ -35,8 +35,11 @@ class PieChartWidget extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: salesByWarehouse.map((data) {
+                int? totalSalesByWarehouse =
+                    data['ChiffreAffaireConstraintedByDate']?.toInt();
                 return _buildLegendItem(
-                  label: "${data['magasin']}: ${data['chiffreAffaires'].toInt()} TND",
+                  label:
+                      "${data['magasin']}: ${totalSalesByWarehouse ?? 0} TND",
                   color: _getColor(salesByWarehouse.indexOf(data)),
                 );
               }).toList(),
@@ -49,10 +52,13 @@ class PieChartWidget extends StatelessWidget {
 
   List<PieChartSectionData> _getSections() {
     return salesByWarehouse.map((data) {
-      int chiffreAffaires = data['chiffreAffaires'].toInt(); // Convertir en entier
-
+      dynamic totalSalesByWarehouse = data[
+          'ChiffreAffaireConstraintedByDate']; // Utilisez la clé appropriée pour le chiffre d'affaires par magasin
+      double chiffreAffaires = totalSalesByWarehouse != null
+          ? totalSalesByWarehouse.toDouble()
+          : 0.0;
       return PieChartSectionData(
-        value: chiffreAffaires.toDouble(),
+        value: chiffreAffaires,
         color: _getColor(salesByWarehouse.indexOf(data)),
         radius: 50, // Ajuster la taille des sections
         title: "", // Supprimer les labels dans le graphique
@@ -84,7 +90,9 @@ class PieChartWidget extends StatelessWidget {
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 8),
-          Text(label, style: const TextStyle(fontSize: 14, color: Colors.black)), // Texte noir
+          Text(label,
+              style: const TextStyle(
+                  fontSize: 14, color: Colors.black)), // Texte noir
         ],
       ),
     );

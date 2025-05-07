@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/api_service.dart';
 import 'package:flutter_application_1/view/activity_views/PieChartWidget.dart';
+import 'package:intl/intl.dart';
 
 class HitParadeView extends StatefulWidget {
   const HitParadeView({super.key});
@@ -10,7 +11,8 @@ class HitParadeView extends StatefulWidget {
 }
 
 class _HitParadeViewState extends State<HitParadeView> {
-  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _startDateController = TextEditingController();
+  final TextEditingController _endDateController = TextEditingController();
   final List<String> _filters = ['Magasin', 'Vendeur', 'Groupe', 'Terminale'];
   int _selectedIndex = 0;
 
@@ -20,6 +22,14 @@ class _HitParadeViewState extends State<HitParadeView> {
   @override
   void initState() {
     super.initState();
+    // Initialiser avec la date du jour
+    final now = DateTime.now();
+    final formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    _startDateController.text = formattedDate;
+    _endDateController.text = formattedDate;
+
+    // Charger les données initiales
+    _fetchSalesData();
   }
 
   Future<void> _fetchSalesData() async {
@@ -27,8 +37,14 @@ class _HitParadeViewState extends State<HitParadeView> {
 
     try {
       ApiService apiService = ApiService();
+
+      // Utiliser les dates sélectionnées pour filtrer les données
+      String startDate = _startDateController.text;
+      String endDate = _endDateController.text;
+
       List<Map<String, dynamic>> sales = _selectedIndex == 0
-          ? await apiService.fetchSalesByWarehouse()
+          ? await apiService.fetchSalesByWarehouse(
+              startDate: startDate, endDate: endDate)
           : await apiService.fetchSalesBySeller();
 
       if (!mounted) return;
@@ -53,26 +69,51 @@ class _HitParadeViewState extends State<HitParadeView> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: TextField(
-                  controller: _dateController,
-                  decoration: const InputDecoration(
-                    labelText: 'Choisir votre date',
-                    filled: true,
-                    prefixIcon: Icon(Icons.calendar_today),
-                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
-                  ),
-                  readOnly: true,
-                  onTap: _selectDate,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _startDateController,
+                        decoration: const InputDecoration(
+                          labelText: 'Date de début',
+                          filled: true,
+                          prefixIcon: Icon(Icons.calendar_today),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black)),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue)),
+                        ),
+                        readOnly: true,
+                        onTap: () => _selectDate(isStartDate: true),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        controller: _endDateController,
+                        decoration: const InputDecoration(
+                          labelText: 'Date de fin',
+                          filled: true,
+                          prefixIcon: Icon(Icons.calendar_today),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black)),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue)),
+                        ),
+                        readOnly: true,
+                        onTap: () => _selectDate(isStartDate: false),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-
+              ElevatedButton(
+                onPressed: _fetchSalesData,
+                child: const Text('Filtrer'),
+              ),
               const SizedBox(height: 20),
-
               _buildToggleButtons(),
-
               const SizedBox(height: 20),
-
               _isLoading
                   ? const CircularProgressIndicator()
                   : Column(
@@ -84,7 +125,6 @@ class _HitParadeViewState extends State<HitParadeView> {
                         ],
                       ],
                     ),
-
               const SizedBox(height: 20),
             ],
           ),
@@ -94,66 +134,69 @@ class _HitParadeViewState extends State<HitParadeView> {
   }
 
   Widget _buildToggleButtons() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: ToggleButtons(
-        borderRadius: BorderRadius.circular(10),
-        isSelected: List.generate(_filters.length, (index) => index == _selectedIndex),
-        onPressed: (index) {
-          setState(() => _selectedIndex = index);
-          _fetchSalesData();
+    return Container(
+      height: 40,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _filters.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: ChoiceChip(
+              label: Text(_filters[index]),
+              selected: _selectedIndex == index,
+              onSelected: (selected) {
+                setState(() {
+                  _selectedIndex = index;
+                  _fetchSalesData();
+                });
+              },
+            ),
+          );
         },
-        children: _filters.map((filter) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-          child: Text(filter),
-        )).toList(),
       ),
     );
   }
 
   Widget _buildSalesTable() {
-    return Padding(
+    if (_salesData.isEmpty) {
+      return const Center(
+        child: Text('Aucune donnée disponible pour la période sélectionnée'),
+      );
+    }
+
+    return Container(
       padding: const EdgeInsets.all(16.0),
-      child: _salesData.isEmpty
-          ? const Text("Aucune donnée disponible", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))
-          : SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columnSpacing: 20,
-                headingRowColor: MaterialStateColor.resolveWith((states) => const Color.fromARGB(255, 214, 234, 251)),
-                dataRowColor: MaterialStateColor.resolveWith((states) => const Color.fromARGB(255, 168, 60, 60)),
-                border: TableBorder.all(width: 1, color: const Color.fromARGB(255, 248, 245, 245)),
-                columns: [
-                  const DataColumn(label: Text("#", style: TextStyle(fontWeight: FontWeight.bold))),
-                  DataColumn(label: Text(_selectedIndex == 0 ? "Magasin" : "Vendeur", style: const TextStyle(fontWeight: FontWeight.bold))),
-                  const DataColumn(label: Text("Chiffre d'affaires (TND)", style: TextStyle(fontWeight: FontWeight.bold))),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'Résultats des ventes',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          DataTable(
+            columns: const [
+              DataColumn(label: Text('Nom')),
+              DataColumn(label: Text('Montant'), numeric: true),
+            ],
+            rows: _salesData.map((item) {
+              return DataRow(
+                cells: [
+                  DataCell(Text(item['magasin'] ?? 'N/A')),
+                  DataCell(Text(
+                      '${item['ChiffreAffaireConstraintedByDate'] ?? 0} TND')),
                 ],
-                rows: _salesData.asMap().entries.map(
-                  (entry) {
-                    String formattedAmount = entry.value['chiffreAffaires'].toInt().toString();
-                    return DataRow(
-                      color: MaterialStateColor.resolveWith((states) => entry.key % 2 == 0 ? Colors.white : Colors.grey.shade300),
-                      cells: [
-                        DataCell(Text("#${entry.key + 1}")),
-                        DataCell(Row(
-                          children: [
-                            Icon(Icons.store, color: Colors.blue.shade700, size: 18),
-                            const SizedBox(width: 8),
-                            Text(entry.value[_selectedIndex == 0 ? 'magasin' : 'vendeur'] ?? 'Inconnu',
-                                style: const TextStyle(fontWeight: FontWeight.w500)),
-                          ],
-                        )),
-                        DataCell(Text("$formattedAmount TND", style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 16, 24, 16)))),
-                      ],
-                    );
-                  },
-                ).toList(),
-              ),
-            ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
 
-  Future<void> _selectDate() async {
+  Future<void> _selectDate({required bool isStartDate}) async {
     DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -162,7 +205,17 @@ class _HitParadeViewState extends State<HitParadeView> {
     );
 
     if (picked != null) {
-      setState(() => _dateController.text = picked.toString().split(" ")[0]);
+      final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
+      setState(() {
+        if (isStartDate) {
+          _startDateController.text = formattedDate;
+        } else {
+          _endDateController.text = formattedDate;
+        }
+      });
+
+      // Optionnel: vous pouvez décider de charger automatiquement les données après la sélection d'une date
+      _fetchSalesData();
     }
   }
 }
