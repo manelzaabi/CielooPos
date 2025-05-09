@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/models/invoices_response.dart';
-import 'package:flutter_application_1/services/api_service.dart';
+import 'package:cieloo/models/invoices_response.dart';
+import 'package:cieloo/services/api_service.dart';
 import 'package:intl/intl.dart'; // Pour formater la date
 
 class TicketScreen extends StatefulWidget {
@@ -39,7 +39,8 @@ class _TicketScreenState extends State<TicketScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Factures (Type Standard)")), // Ajout d'un titre
+      appBar:
+          AppBar(title: Text("Factures (Type Standard)")), // Ajout d'un titre
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : tickets.isEmpty
@@ -59,8 +60,10 @@ class _TicketScreenState extends State<TicketScreen> {
                         rows: tickets.map((ticket) {
                           return DataRow(cells: [
                             DataCell(Text(ticket.ref)),
-                            DataCell(Text("${ticket.prix.toStringAsFixed(2)} TND")),
-                            DataCell(Text(DateFormat('dd/MM/yyyy').format(ticket.dateFacture))),
+                            DataCell(
+                                Text("${ticket.prix.toStringAsFixed(2)} TND")),
+                            DataCell(Text(DateFormat('dd/MM/yyyy')
+                                .format(ticket.dateFacture))),
                           ]);
                         }).toList(),
                       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/view/home_screen.dart';
-import 'package:flutter_application_1/viewModel/loginViewmodel.dart';
+import 'package:cieloo/view/home_screen.dart';
+import 'package:cieloo/viewModel/loginViewmodel.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -48,7 +48,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 30),
                   const Text(
                     "Username",
-                    style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                        color: Colors.blue, fontWeight: FontWeight.w500),
                   ),
                   TextFormField(
                     controller: _usernameController,
@@ -61,7 +62,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 20),
                   const Text(
                     "Password",
-                    style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                        color: Colors.blue, fontWeight: FontWeight.w500),
                   ),
                   TextFormField(
                     controller: _passwordController,
@@ -69,7 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: InputDecoration(
                       hintText: "Enter your password",
                       border: const OutlineInputBorder(),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 10),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword
@@ -98,7 +101,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               // Validate inputs before making the API call
                               if (username.isEmpty || password.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Please fill in both fields")),
+                                  const SnackBar(
+                                      content:
+                                          Text("Please fill in both fields")),
                                 );
                                 return;
                               }
@@ -107,7 +112,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _isLoading = true;
                               });
 
-                              final success = await loginViewModel.login(username, password);
+                              final success = await loginViewModel.login(
+                                  username, password);
                               setState(() {
                                 _isLoading = false;
                               });
@@ -121,7 +127,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(loginViewModel.errorMessage)),
+                                  SnackBar(
+                                      content:
+                                          Text(loginViewModel.errorMessage)),
                                 );
                               }
                             },

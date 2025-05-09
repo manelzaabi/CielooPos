@@ -1,5 +1,5 @@
-name: flutter_application_1
-description: "A new Flutter project."
+name: cieloo
+description: "cielooPos flutter application for project management"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -104,3 +104,10 @@ flutter_icons:
   image_path: "assets/logo.png"  # Assure-toi que le fichier existe
   adaptive_icon_background: "#ffffff"  # (Optionnel) Couleur de fond pour Android
   adaptive_icon_foreground: "assets/logo_adaptive.png"  # (Optionnel) Pour Android 8+
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logo.png"
+  min_sdk_android: 16
+  remove_alpha_ios: true

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter_application_1/view/login_screen.dart';
+import 'package:cieloo/view/login_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -40,12 +40,10 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/logo.png'), 
+            Image.asset('assets/logo.png'),
           ],
         ),
       ),
     );
   }
 }
-
-

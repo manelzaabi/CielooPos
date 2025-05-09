@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/services/api_service.dart';
-import 'package:flutter_application_1/view/activity_views/PieChartWidget.dart';
+import 'package:cieloo/services/api_service.dart';
+import 'package:cieloo/view/activity_views/PieChartWidget.dart';
 import 'package:intl/intl.dart';
 
 class HitParadeView extends StatefulWidget {

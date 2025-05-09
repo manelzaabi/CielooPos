@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/view/custom_app_bar.dart';
+import 'package:cieloo/view/custom_app_bar.dart';
 
 class ReglementScreen extends StatefulWidget {
   const ReglementScreen({super.key});
@@ -11,8 +11,6 @@ class ReglementScreen extends StatefulWidget {
 class _ReglementScreenState extends State<ReglementScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: CustomAppBar()
-    );
+    return const Scaffold(appBar: CustomAppBar());
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/view/custom_app_bar.dart';
-import 'package:flutter_application_1/models/invoices_response.dart';
-import 'package:flutter_application_1/services/api_service.dart';
+import 'package:cieloo/view/custom_app_bar.dart';
+import 'package:cieloo/models/invoices_response.dart';
+import 'package:cieloo/services/api_service.dart';
 import 'package:intl/intl.dart';
 
 class SalesScreen extends StatefulWidget {
@@ -62,8 +62,10 @@ class _SalesScreenState extends State<SalesScreen> {
                         rows: tickets.map((ticket) {
                           return DataRow(cells: [
                             DataCell(Text(ticket.ref)),
-                            DataCell(Text("${ticket.prix.toStringAsFixed(2)} TND")),
-                            DataCell(Text(DateFormat('dd/MM/yyyy').format(ticket.dateFacture))),
+                            DataCell(
+                                Text("${ticket.prix.toStringAsFixed(2)} TND")),
+                            DataCell(Text(DateFormat('dd/MM/yyyy')
+                                .format(ticket.dateFacture))),
                           ]);
                         }).toList(),
                       ),
